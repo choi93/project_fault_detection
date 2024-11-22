@@ -18,12 +18,10 @@ class SegmentationLossFunction:
         label = self.smooth_step(label)
         diff = torch.relu(label[:, :, 1:, :] - label[:, :, :-1, :])
         
-        return torch.cat([
-            torch.zeros_like(diff[:, :, :1, :]), 
-            torch.cumsum(diff, dim=2)
-        ], dim=2)
+        return torch.cumsum(diff, dim=2)
+        
     
-    def cum_loss(self, pred, label, norm='L2', direction='forward'):
+    def cum_loss(self, pred, label, norm='L2', direction='forward', normalization=None):
         if direction == 'reverse':
             pred = torch.flip(pred, dims=[2])
             label = torch.flip(label, dims=[2])
@@ -31,19 +29,23 @@ class SegmentationLossFunction:
         label = self.cum_label_torch(label)
         pred = self.cum_label_torch(pred)
         
-        if norm == 'L2':
+        if norm == 'L2' and normalization==None:
             loss = torch.mean((pred - label)**2)
-        elif norm == 'L1':
+        elif norm == 'L2' and normalization==True:
+            loss = torch.mean(((pred - label)/(label+1))**2)
+        elif norm == 'L1' and normalization==None:
             loss = torch.mean(torch.abs(pred - label))
+        elif norm == 'L1' and normalization==True:
+            loss = torch.mean(torch.abs((pred - label)/(label+1)))
         
         return loss
     
-    def __call__(self, predictions, labels, k, use_seg_loss=True):
+def __call__(self, predictions, labels, k, use_seg_loss=True, norm='L2', normalization=None):
         if not use_seg_loss:
             return self.bce(predictions, labels)
 
         loss1 = self.bce(predictions, labels)
-        loss2 = self.cum_loss(predictions, labels, 'L2', 'forward')
-        loss3 = self.cum_loss(predictions, labels, 'L2', 'reverse')
+        loss2 = self.cum_loss(predictions, labels, norm, 'forward', normalization)
+        loss3 = self.cum_loss(predictions, labels, norm, 'reverse', normalization)
         
         return loss1*k[0] + loss2*k[1] + loss3*k[2] 

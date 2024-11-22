@@ -22,25 +22,25 @@ class Trainer:
         
         os.makedirs(save_dir, exist_ok=True)
         
-    def train_step(self, inputs, labels, k, epoch):
+    def train_step(self, inputs, labels, k, epoch, use_seg_loss=True, norm='L2', normalization=None):
         self.optimizer.zero_grad()
         predictions = self.model(inputs)
-        loss = self.loss_fn(predictions, labels, k)
+        loss = self.loss_fn(predictions, labels, k, use_seg_loss, norm, normalization)
         loss.backward()
         self.optimizer.step()
         return loss.item()
     
-    def validate(self, val_loader, k):
+    def validate(self, val_loader, k, use_seg_loss=True, norm='L2', normalization=None):
         self.model.eval()
         val_loss = 0
         with torch.no_grad():
             for inputs, labels in val_loader:
                 outputs = self.model(inputs)
-                loss = self.loss_fn(outputs, labels, k)
+                loss = self.loss_fn(outputs, labels, k, use_seg_loss, norm, normalization)
                 val_loss += loss.item()
         return val_loss / len(val_loader)
     
-    def train(self, train_loader, val_loader, num_epochs, k):
+    def train(self, train_loader, val_loader, num_epochs, k, use_seg_loss=True, norm='L2', normalization=None):
         for epoch in range(num_epochs):
             print(f'Epoch {epoch+1}/{num_epochs}')
             epoch_start_time = time.time()
@@ -49,11 +49,11 @@ class Trainer:
             epoch_loss = 0.0
             
             for inputs, labels in tqdm(train_loader, desc=f"Training Epoch {epoch+1}"):
-                loss = self.train_step(inputs, labels, k, epoch)
+                loss = self.train_step(inputs, labels, k, epoch, use_seg_loss, norm, normalization)
                 epoch_loss += loss
             
             avg_loss = epoch_loss / len(train_loader)
-            val_loss = self.validate(val_loader, k)
+            val_loss = self.validate(val_loader, k, use_seg_loss, norm, normalization)
             
             self._save_checkpoint(epoch, avg_loss, val_loss)
             self._log_epoch_results(epoch, avg_loss, val_loss, epoch_start_time)
@@ -101,5 +101,8 @@ if __name__ == "__main__":
         train_loader=data_module.train_loader,
         val_loader=data_module.val_loader,
         num_epochs=epochs,
-        k=k
+        k=k,
+        use_seg_loss=True,
+        norm='L2',
+        normalization=None
     ) 
