@@ -1,7 +1,7 @@
 import torch
 import torch.optim as optim
 from models.unet import UNet
-from data.data_module import DataModule
+from utils.data_module import DataModule
 from losses.segmentation_loss import SegmentationLossFunction
 import os
 import time
