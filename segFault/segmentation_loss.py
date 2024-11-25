@@ -40,7 +40,7 @@ class SegmentationLossFunction:
         
         return loss
     
-def __call__(self, predictions, labels, k, use_seg_loss=True, norm='L2', normalization=None):
+    def __call__(self, predictions, labels, k, use_seg_loss=True, norm='L2', normalization=None):
         if not use_seg_loss:
             return self.bce(predictions, labels)
 
