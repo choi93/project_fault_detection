@@ -14,13 +14,16 @@ class DataModule:
         self.batch_size = batch_size
         self.device = device
         
-    def load_data(self, fname):
+    def load_data(self, fname, channel=None):
         """
         데이터 로드
         """
         data = np.load(self.data_dir + fname).astype(np.float32)
-        data = np.expand_dims(data, axis=1)
+        if channel is None:
+            data = np.expand_dims(data, axis=1)
+            
         return torch.tensor(data, dtype=torch.float32, device=self.device)
+    
     
     def setup(self, train_file=None, val_file=None, val_ratio=None, seed=42):
         """

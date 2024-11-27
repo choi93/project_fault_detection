@@ -4,7 +4,7 @@
 device: 'cuda:0'
 
 # 데이터 파라미터
-data_dir: './'
+data_dir: './data_wu/'
 train_file:
   - 's_train.npy'
   - 'e_train.npy'
@@ -23,3 +23,4 @@ batch_size: 100
 epochs: 600
 optimizer: 'adam'
 learning_rate: 0.0001 
+save_dir: './save_wu/'

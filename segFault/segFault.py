@@ -37,8 +37,9 @@ class Trainer:
             self.optimizer = optim.Adam(self.model.parameters(), lr=self.params['learning_rate'])
         self.loss_fn = SegmentationLossFunction(self.device)
         
-        self.save_dir = './models'
+        self.save_dir = self.params['save_dir']
         os.makedirs(self.save_dir, exist_ok=True)
+        os.makedirs(self.save_dir + 'models', exist_ok=True)
         self.best_loss = float('inf')
         self.best_epoch = 0
 
@@ -84,14 +85,14 @@ class Trainer:
             self._log_epoch_results(epoch, avg_loss, val_loss, epoch_start_time)
     
     def _save_checkpoint(self, epoch, val_loss):
-        torch.save(self.model.state_dict(), f'{self.save_dir}/model{epoch}.pth')
+        torch.save(self.model.state_dict(), f'{self.save_dir}models/model{epoch}.pth')
         if val_loss < self.best_loss:
             self.best_loss = val_loss
             self.best_epoch = epoch
     
     def _log_epoch_results(self, epoch, train_loss, val_loss, start_time):
         duration = time.time() - start_time
-        with open("val_loss.txt", 'a') as fv:
+        with open(self.save_dir + "val_loss.txt", 'a') as fv:
             fv.write(f"{epoch}, {train_loss}, {val_loss}\n")
         
         print(f"Epoch {epoch+1} completed in {duration//60:.0f}m {duration%60:.0f}s")
