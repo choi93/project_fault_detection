@@ -1,0 +1,26 @@
+# Configuration file for training parameters
+
+# 시스템 파라미터
+device: 'cuda:3'
+
+# 데이터 파라미터
+data_dir: './'
+train_file:
+  - 's_train.npy'
+  - 'e_train.npy'
+val_file:
+  - 's_val.npy'
+  - 'e_val.npy'
+
+# 학습 파라미터
+use_seg_loss: true
+k: [1.0, 1.0, 1.0]
+norm: 'L2'
+normalization: True
+
+# 트레이너 파라미터
+batch_size: 100
+epochs: 600
+optimizer: 'adam'
+learning_rate: 0.001 
+save_dir: './save_mse_norm_high_lr/'
