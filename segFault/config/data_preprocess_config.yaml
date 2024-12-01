@@ -1,0 +1,17 @@
+data:
+  nmodel: 100
+  nx: 801
+  nxl: 128
+  nz: 151
+  nwc: 0
+  nzc: 151
+  nxp: 801
+  nxpl: 128
+  nzp: 128
+  nxr: 128
+  nzr: 128
+  indir: './data'
+  fname: './out_mig/mig.bin.'
+  lname: './out_lconv_thick/label.bin.'
+  seisname: 'seis.npy'
+  labelname: 'label.npy' 
