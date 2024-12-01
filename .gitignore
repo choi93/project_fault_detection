@@ -1,2 +1,8 @@
 *.npy
 test_thebe.py
+trained_models*
+val_loss_*
+models*
+save_*
+thebe*
+nohup*
